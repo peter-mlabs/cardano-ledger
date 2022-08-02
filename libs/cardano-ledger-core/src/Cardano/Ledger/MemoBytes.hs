@@ -26,11 +26,12 @@ module Cardano.Ledger.MemoBytes
   ( MemoBytes(Memo),
     Mem,
     mkMemoBytes,
-    memoBytesFromCBOR,
+    memoBytes,
     shorten,
     showMemo,
     printMemo,
     roundTripMemo,
+    shortToLazy,
   )
 where
 
@@ -66,13 +67,15 @@ import Prelude hiding (span)
 --   serializations.
 data MemoBytes t era = Memo'
   { memoType :: !(t era),
-    memoBytes :: ShortByteString,
+    memoByteString :: ShortByteString,
     memoHash :: SafeHash (Crypto era) (MemoHashIndex t)
   }
-  deriving (NoThunks) via AllowThunksIn '["memoBytes"] (MemoBytes t era)
+  deriving (NoThunks) via AllowThunksIn '["memoByteString"] (MemoBytes t era)
 
-pattern Memo :: t era -> ShortByteString -> MemoBytes t era
+pattern Memo :: Era era => t era -> ShortByteString -> MemoBytes t era
 pattern Memo memoType memoBytes <- Memo' memoType memoBytes _
+  where
+    Memo mt mb = mkMemoBytes mt (shortToLazy mb)
 {-# COMPLETE Memo #-}
 
 type family MemoHashIndex (t :: Type -> Type) :: Type
@@ -101,7 +104,7 @@ instance Eq (MemoBytes t era) where (Memo' _ x _) == (Memo' _ y _) = x == y
 instance Show (t era) => Show (MemoBytes t era) where show (Memo' y _ _) = show y
 
 instance SafeToHash (MemoBytes t era) where
-  originalBytes = fromShort . memoBytes
+  originalBytes = fromShort . memoByteString
 
 -- | Turn a lazy bytestring into a short bytestring.
 shorten :: Lazy.ByteString -> ShortByteString
@@ -127,8 +130,8 @@ printMemo :: Show (t era) => MemoBytes t era -> IO ()
 printMemo x = putStrLn (showMemo x)
 
 -- | Create MemoBytes from its CBOR encoding
-memoBytesFromCBOR :: Era era => Encode w (t era) -> MemoBytes t era
-memoBytesFromCBOR t = mkMemoBytes (runE t) (toLazyByteString (encode t))
+memoBytes :: Era era => Encode w (t era) -> MemoBytes t era
+memoBytes t = mkMemoBytes (runE t) (toLazyByteString (encode t))
 
 -- | Try and deserialize a MemoBytes, and then reconstruct it. Useful in tests.
 roundTripMemo :: (FromCBOR (t era), Era era) => MemoBytes t era -> Either Codec.CBOR.Read.DeserialiseFailure (Lazy.ByteString, MemoBytes t era)
@@ -138,3 +141,8 @@ roundTripMemo (Memo' _t bytes _hash) =
     Right (leftover, newt) -> Right (leftover, mkMemoBytes newt lbs)
   where
     lbs = fromStrict (fromShort bytes)
+
+-- | Helper function. Converts a short bytestring to a lazy bytestring.
+shortToLazy :: ShortByteString -> BSL.ByteString
+shortToLazy = fromStrict . fromShort
+

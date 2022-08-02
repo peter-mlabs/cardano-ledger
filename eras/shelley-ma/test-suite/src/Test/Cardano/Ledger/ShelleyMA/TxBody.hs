@@ -71,7 +71,7 @@ testmint = MaryValue 0 (Map.singleton policyId (Map.singleton aname 2))
     policyId = PolicyID . hashScript @TestEra . RequireAnyOf $ fromList []
     aname = AssetName $ fromString "asset name"
 
-bytes :: MATxBody era -> ShortByteString
+bytes :: Era era => MATxBody era -> ShortByteString
 bytes (TxBodyConstr (Memo _ b)) = b
 
 fieldTests :: TestTree

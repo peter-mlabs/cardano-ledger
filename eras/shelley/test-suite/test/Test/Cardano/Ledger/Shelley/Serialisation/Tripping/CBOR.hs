@@ -71,6 +71,7 @@ import Test.Cardano.Ledger.Shelley.Serialisation.EraIndepGenerators ()
 import Test.Cardano.Ledger.Shelley.Serialisation.Generators ()
 import Test.Tasty
 import Test.Tasty.QuickCheck (Property, counterexample, testProperty, (.&&.), (===))
+import Cardano.Ledger.Shelley (ShelleyEra)
 
 -- | Check that: deserialize . serialize = id
 roundtrip ::
@@ -190,7 +191,7 @@ prop_roundtrip_EpochState = roundtrip2 toCBOR fromCBOR
 prop_roundtrip_NewEpochState :: Ledger.NewEpochState Mock.C -> Property
 prop_roundtrip_NewEpochState = roundtrip2 toCBOR fromCBOR
 
-prop_roundtrip_MultiSig :: Ledger.MultiSig Mock.C_Crypto -> Property
+prop_roundtrip_MultiSig :: Ledger.MultiSig (ShelleyEra Mock.C_Crypto) -> Property
 prop_roundtrip_MultiSig = roundtrip' toCBOR ((. Full) . runAnnotator <$> fromCBOR)
 
 prop_roundtrip_metadata :: Ledger.Metadata Mock.C -> Property

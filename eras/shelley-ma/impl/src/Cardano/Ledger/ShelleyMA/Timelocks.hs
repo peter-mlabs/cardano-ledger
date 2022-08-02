@@ -49,7 +49,7 @@ import Cardano.Ledger.Keys (KeyHash (..), KeyRole (Witness))
 import Cardano.Ledger.MemoBytes
   ( Mem,
     MemoBytes (..),
-    memoBytesFromCBOR,
+    memoBytes,
     mkMemoBytes,
   )
 import Cardano.Ledger.SafeHash (SafeToHash)
@@ -203,42 +203,42 @@ pattern RequireSignature akh <-
   TimelockConstr (Memo (Signature akh) _)
   where
     RequireSignature akh =
-      TimelockConstr $ memoBytesFromCBOR (encRaw (Signature akh))
+      TimelockConstr $ memoBytes (encRaw (Signature akh))
 
 pattern RequireAllOf :: Era era => StrictSeq (Timelock era) -> Timelock era
 pattern RequireAllOf ms <-
   TimelockConstr (Memo (AllOf ms) _)
   where
     RequireAllOf ms =
-      TimelockConstr $ memoBytesFromCBOR (encRaw (AllOf ms))
+      TimelockConstr $ memoBytes (encRaw (AllOf ms))
 
 pattern RequireAnyOf :: Era era => StrictSeq (Timelock era) -> Timelock era
 pattern RequireAnyOf ms <-
   TimelockConstr (Memo (AnyOf ms) _)
   where
     RequireAnyOf ms =
-      TimelockConstr $ memoBytesFromCBOR (encRaw (AnyOf ms))
+      TimelockConstr $ memoBytes (encRaw (AnyOf ms))
 
 pattern RequireMOf :: Era era => Int -> StrictSeq (Timelock era) -> Timelock era
 pattern RequireMOf n ms <-
   TimelockConstr (Memo (MOfN n ms) _)
   where
     RequireMOf n ms =
-      TimelockConstr $ memoBytesFromCBOR (encRaw (MOfN n ms))
+      TimelockConstr $ memoBytes (encRaw (MOfN n ms))
 
 pattern RequireTimeExpire :: Era era => SlotNo -> Timelock era
 pattern RequireTimeExpire mslot <-
   TimelockConstr (Memo (TimeExpire mslot) _)
   where
     RequireTimeExpire mslot =
-      TimelockConstr $ memoBytesFromCBOR (encRaw (TimeExpire mslot))
+      TimelockConstr $ memoBytes (encRaw (TimeExpire mslot))
 
 pattern RequireTimeStart :: Era era => SlotNo -> Timelock era
 pattern RequireTimeStart mslot <-
   TimelockConstr (Memo (TimeStart mslot) _)
   where
     RequireTimeStart mslot =
-      TimelockConstr $ memoBytesFromCBOR (encRaw (TimeStart mslot))
+      TimelockConstr $ memoBytes (encRaw (TimeStart mslot))
 
 {-# COMPLETE RequireSignature, RequireAllOf, RequireAnyOf, RequireMOf, RequireTimeExpire, RequireTimeStart #-}
 

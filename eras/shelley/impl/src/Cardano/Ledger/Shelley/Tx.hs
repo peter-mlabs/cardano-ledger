@@ -114,7 +114,7 @@ import Data.Maybe.Strict
     maybeToStrictMaybe,
     strictMaybeToMaybe,
   )
-import Cardano.Ledger.MemoBytes (Mem, MemoBytes, memoBytesFromCBOR, mkMemoBytes, pattern Memo)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes, memoBytes, mkMemoBytes, pattern Memo)
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Typeable (Typeable)
@@ -166,7 +166,7 @@ bodyShelleyTxL :: EraTx era => Lens' (ShelleyTx era) (Core.TxBody era)
 bodyShelleyTxL =
   lens
     (\(TxConstr (Memo tx _)) -> _body tx)
-    (\(TxConstr (Memo tx _)) txBody -> TxConstr $ memoBytesFromCBOR $ encodeTxRaw $ tx {_body = txBody})
+    (\(TxConstr (Memo tx _)) txBody -> TxConstr $ memoBytes $ encodeTxRaw $ tx {_body = txBody})
 
 -- | `Witnesses` setter and getter for `ShelleyTx`. The setter does update
 -- memoized binary representation.
@@ -174,7 +174,7 @@ witsShelleyTxL :: EraTx era => Lens' (ShelleyTx era) (Witnesses era)
 witsShelleyTxL =
   lens
     (\(TxConstr (Memo tx _)) -> _wits tx)
-    (\(TxConstr (Memo tx _)) txWits -> TxConstr $ memoBytesFromCBOR $ encodeTxRaw $ tx {_wits = txWits})
+    (\(TxConstr (Memo tx _)) txWits -> TxConstr $ memoBytes $ encodeTxRaw $ tx {_wits = txWits})
 
 -- | `AuxiliaryData` setter and getter for `ShelleyTx`. The setter does update
 -- memoized binary representation.
@@ -185,11 +185,11 @@ auxDataShelleyTxL =
     (\(TxConstr (Memo tx _)) auxData -> mkShelleyTx $ tx {_auxiliaryData = auxData})
 
 -- | Size getter for `ShelleyTx`.
-sizeShelleyTxF :: SimpleGetter (Tx era) Integer
+sizeShelleyTxF :: Era era =>SimpleGetter (Tx era) Integer
 sizeShelleyTxF = to (\(TxConstr (Memo _ bytes)) -> fromIntegral $ SBS.length bytes)
 
 mkShelleyTx :: EraTx era => TxRaw era -> ShelleyTx era
-mkShelleyTx = TxConstr . memoBytesFromCBOR . encodeTxRaw
+mkShelleyTx = TxConstr . memoBytes . encodeTxRaw
 
 mkBasicShelleyTx :: EraTx era => Core.TxBody era -> ShelleyTx era
 mkBasicShelleyTx txBody =

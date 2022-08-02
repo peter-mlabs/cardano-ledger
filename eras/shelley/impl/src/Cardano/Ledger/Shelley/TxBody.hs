@@ -130,7 +130,7 @@ import Data.Coders
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Maybe (fromMaybe)
-import Cardano.Ledger.MemoBytes (Mem, MemoBytes, memoBytesFromCBOR, pattern Memo)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes, memoBytes, pattern Memo)
 import Data.Proxy (Proxy (..))
 import Data.Sequence.Strict (StrictSeq)
 import qualified Data.Sequence.Strict as StrictSeq
@@ -445,7 +445,7 @@ pattern ShelleyTxBody {_inputs, _outputs, _certs, _wdrls, _txfee, _ttl, _txUpdat
 {-# COMPLETE ShelleyTxBody #-}
 
 mkShelleyTxBody :: EraTxBody era => TxBodyRaw era -> ShelleyTxBody era
-mkShelleyTxBody = TxBodyConstr . memoBytesFromCBOR . txSparse
+mkShelleyTxBody = TxBodyConstr . memoBytes . txSparse
 
 -- =========================================
 

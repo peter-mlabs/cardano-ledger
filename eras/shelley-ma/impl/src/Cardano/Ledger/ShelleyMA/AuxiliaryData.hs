@@ -48,7 +48,7 @@ import Codec.CBOR.Decoding
 import Control.DeepSeq
 import Data.Coders
 import Data.Map.Strict (Map)
-import Cardano.Ledger.MemoBytes (Mem, MemoBytes (Memo), memoBytesFromCBOR)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes (Memo), memoBytes)
 import Data.Sequence.Strict (StrictSeq)
 import qualified Data.Sequence.Strict as StrictSeq
 import Data.Word (Word64)
@@ -108,7 +108,7 @@ pattern MAAuxiliaryData blob sp <-
   where
     MAAuxiliaryData blob sp =
       AuxiliaryDataWithBytes $
-        memoBytesFromCBOR
+        memoBytes
           (encAuxiliaryDataRaw $ AuxiliaryDataRaw blob sp)
 
 {-# COMPLETE MAAuxiliaryData #-}
@@ -118,6 +118,7 @@ type AuxiliaryData = MAAuxiliaryData
 {-# DEPRECATED AuxiliaryData "Use `MAAuxiliaryData` instead" #-}
 
 pattern AuxiliaryData' ::
+  Era era =>
   Map Word64 Metadatum ->
   StrictSeq (Script era) ->
   MAAuxiliaryData era

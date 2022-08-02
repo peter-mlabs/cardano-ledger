@@ -86,7 +86,7 @@ import Data.Coders
     (!>),
   )
 import qualified Data.Map.Strict as Map
-import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytesFromCBOR)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytes)
 import Data.Proxy
 import Data.Sequence.Strict (StrictSeq, fromList)
 import Data.Set (Set, empty)
@@ -247,11 +247,12 @@ mkMATxBody ::
   ShelleyMAEraTxBody era =>
   TxBodyRaw era ->
   MATxBody era
-mkMATxBody = TxBodyConstr . memoBytesFromCBOR . txSparse
+mkMATxBody = TxBodyConstr . memoBytes . txSparse
 
 -- | This pattern is for deconstruction only but accompanied with fields and
 -- projection functions.
 pattern TxBody' ::
+  Era era =>
   Set (TxIn (Crypto era)) ->
   StrictSeq (ShelleyTxOut era) ->
   StrictSeq (DCert (Crypto era)) ->

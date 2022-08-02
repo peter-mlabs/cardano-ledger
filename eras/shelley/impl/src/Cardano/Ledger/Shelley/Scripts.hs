@@ -39,7 +39,7 @@ import Cardano.Ledger.Keys (KeyHash (..), KeyRole (Witness))
 import Cardano.Ledger.MemoBytes
   ( Mem,
     MemoBytes,
-    memoBytesFromCBOR,
+    memoBytes,
     pattern Memo,
   )
 import Cardano.Ledger.SafeHash (SafeToHash (..))
@@ -103,7 +103,7 @@ instance CC.Crypto c => EraScript (ShelleyEra c) where
 
 deriving newtype instance NFData (MultiSig era)
 
-getMultiSigBytes :: MultiSig era -> ShortByteString
+getMultiSigBytes :: Era era => MultiSig era -> ShortByteString
 getMultiSigBytes (MultiSigConstr (Memo _ bytes)) = bytes
 
 deriving via
@@ -116,28 +116,28 @@ pattern RequireSignature akh <-
   MultiSigConstr (Memo (RequireSignature' akh) _)
   where
     RequireSignature akh =
-      MultiSigConstr $ memoBytesFromCBOR (Sum RequireSignature' 0 !> To akh)
+      MultiSigConstr $ memoBytes (Sum RequireSignature' 0 !> To akh)
 
 pattern RequireAllOf :: Era era => [MultiSig era] -> MultiSig era
 pattern RequireAllOf ms <-
   MultiSigConstr (Memo (RequireAllOf' ms) _)
   where
     RequireAllOf ms =
-      MultiSigConstr $ memoBytesFromCBOR (Sum RequireAllOf' 1 !> E encodeFoldable ms)
+      MultiSigConstr $ memoBytes (Sum RequireAllOf' 1 !> E encodeFoldable ms)
 
 pattern RequireAnyOf :: Era era => [MultiSig era] -> MultiSig era
 pattern RequireAnyOf ms <-
   MultiSigConstr (Memo (RequireAnyOf' ms) _)
   where
     RequireAnyOf ms =
-      MultiSigConstr $ memoBytesFromCBOR (Sum RequireAnyOf' 2 !> E encodeFoldable ms)
+      MultiSigConstr $ memoBytes (Sum RequireAnyOf' 2 !> E encodeFoldable ms)
 
 pattern RequireMOf :: Era era => Int -> [MultiSig era] -> MultiSig era
 pattern RequireMOf n ms <-
   MultiSigConstr (Memo (RequireMOf' n ms) _)
   where
     RequireMOf n ms =
-      MultiSigConstr $ memoBytesFromCBOR (Sum RequireMOf' 3 !> To n !> E encodeFoldable ms)
+      MultiSigConstr $ memoBytes (Sum RequireMOf' 3 !> To n !> E encodeFoldable ms)
 
 {-# COMPLETE RequireSignature, RequireAllOf, RequireAnyOf, RequireMOf #-}
 
