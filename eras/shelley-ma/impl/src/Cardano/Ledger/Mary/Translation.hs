@@ -167,6 +167,16 @@ instance Crypto c => TranslateEra (MaryEra c) Update where
 instance Crypto c => TranslateEra (MaryEra c) MAAuxiliaryData where
   translateEra _ (MAAuxiliaryData md as) =
     pure $ MAAuxiliaryData md as
+--                            ^^
+-- • Couldn't match type ‘'Cardano.Ledger.ShelleyMA.Era.Allegra’
+--                  with ‘'Cardano.Ledger.ShelleyMA.Era.Mary’
+--   Expected type: Data.Sequence.Strict.StrictSeq
+--                    (Cardano.Ledger.Core.Script (MaryEra c))
+--     Actual type: Data.Sequence.Strict.StrictSeq
+--                    (Cardano.Ledger.Core.Script (AllegraEra c))
+-- • In the second argument of ‘MAAuxiliaryData’, namely ‘as’
+--   In the second argument of ‘($)’, namely ‘MAAuxiliaryData md as’
+--   In the expression: pure $ MAAuxiliaryData md as
 
 translateValue :: Crypto c => Coin -> MaryValue c
 translateValue = Val.inject
