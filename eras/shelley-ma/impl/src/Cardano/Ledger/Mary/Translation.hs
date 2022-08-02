@@ -30,6 +30,7 @@ import Control.Monad.Except (throwError)
 import Data.Coerce (coerce)
 import qualified Data.Map.Strict as Map
 import Data.Maybe (fromMaybe)
+import Cardano.Ledger.ShelleyMA.Timelocks (Timelock, translateTimelock)
 
 --------------------------------------------------------------------------------
 -- Translation from Allegra to Mary
@@ -164,19 +165,12 @@ instance Crypto c => TranslateEra (MaryEra c) ShelleyWitnesses where
 instance Crypto c => TranslateEra (MaryEra c) Update where
   translateEra _ (Update pp en) = pure $ Update (coerce pp) en
 
+instance Crypto c => TranslateEra (MaryEra c) Timelock where
+  translateEra _ = pure . translateTimelock 
+
 instance Crypto c => TranslateEra (MaryEra c) MAAuxiliaryData where
-  translateEra _ (MAAuxiliaryData md as) =
-    pure $ MAAuxiliaryData md as
---                            ^^
--- • Couldn't match type ‘'Cardano.Ledger.ShelleyMA.Era.Allegra’
---                  with ‘'Cardano.Ledger.ShelleyMA.Era.Mary’
---   Expected type: Data.Sequence.Strict.StrictSeq
---                    (Cardano.Ledger.Core.Script (MaryEra c))
---     Actual type: Data.Sequence.Strict.StrictSeq
---                    (Cardano.Ledger.Core.Script (AllegraEra c))
--- • In the second argument of ‘MAAuxiliaryData’, namely ‘as’
---   In the second argument of ‘($)’, namely ‘MAAuxiliaryData md as’
---   In the expression: pure $ MAAuxiliaryData md as
+  translateEra ctx (MAAuxiliaryData md as) =
+    pure $ MAAuxiliaryData md $ translateEra' ctx <$> as
 
 translateValue :: Crypto c => Coin -> MaryValue c
 translateValue = Val.inject

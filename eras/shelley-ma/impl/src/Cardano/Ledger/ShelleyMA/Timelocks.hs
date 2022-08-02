@@ -11,6 +11,7 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
@@ -32,6 +33,7 @@ module Cardano.Ledger.ShelleyMA.Timelocks
     encodeVI,
     decodeVI,
     translate,
+    translateTimelock,
   )
 where
 
@@ -48,6 +50,7 @@ import Cardano.Ledger.MemoBytes
   ( Mem,
     MemoBytes (..),
     memoBytesFromCBOR,
+    mkMemoBytes,
   )
 import Cardano.Ledger.SafeHash (SafeToHash)
 import Cardano.Ledger.Serialization (decodeStrictSeq, encodeFoldable)
@@ -56,6 +59,7 @@ import Cardano.Ledger.ShelleyMA.Era (MAClass, ShelleyMAEra)
 import Cardano.Slotting.Slot (SlotNo (..))
 import Codec.CBOR.Read (deserialiseFromBytes)
 import Control.DeepSeq (NFData (..))
+import Data.ByteString.Lazy (fromStrict)
 import qualified Data.ByteString.Lazy as Lazy
 import Data.ByteString.Short (fromShort)
 import Data.Coders
@@ -123,6 +127,24 @@ data TimelockRaw era
   deriving (Eq, Show, Generic, NFData)
 
 deriving instance Era era => NoThunks (TimelockRaw era)
+
+translateTimelock ::
+  forall era1 era2.
+  ( Era era1,
+    Era era2,
+    Crypto era1 ~ Crypto era2
+  ) =>
+  Timelock era1 ->
+  Timelock era2
+translateTimelock (TimelockConstr (Memo tl bs)) =
+  let rewrap rtl = TimelockConstr $ mkMemoBytes rtl (fromStrict $ fromShort bs)
+   in case tl of
+        Signature s -> rewrap $ Signature s
+        AllOf l -> rewrap . AllOf $ translateTimelock <$> l
+        AnyOf l -> rewrap . AnyOf $ translateTimelock <$> l
+        MOfN n l -> rewrap $ MOfN n (translateTimelock <$> l)
+        TimeStart x -> rewrap $ TimeStart x
+        TimeExpire x -> rewrap $ TimeExpire x
 
 -- These coding choices are chosen so that a MultiSig script
 -- can be deserialised as a Timelock script
