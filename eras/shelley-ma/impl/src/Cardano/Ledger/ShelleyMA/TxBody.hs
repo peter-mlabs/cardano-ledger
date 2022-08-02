@@ -50,6 +50,7 @@ import Cardano.Ledger.BaseTypes (StrictMaybe (SJust, SNothing))
 import Cardano.Ledger.Coin (Coin (..))
 import Cardano.Ledger.Core hiding (TxBody)
 import qualified Cardano.Ledger.Core as Core
+import Cardano.Ledger.Mary.Value (MultiAsset (..))
 import Cardano.Ledger.SafeHash (HashAnnotated, SafeToHash)
 import Cardano.Ledger.Serialization (encodeFoldable)
 import Cardano.Ledger.Shelley.PParams (Update)
@@ -61,13 +62,12 @@ import Cardano.Ledger.Shelley.TxBody
     addrEitherShelleyTxOutL,
     valueEitherShelleyTxOutL,
   )
-import Cardano.Ledger.ShelleyMA.Era (MAClass (getScriptHash), ShelleyMAEra)
+import Cardano.Ledger.ShelleyMA.Era (MAClass (..), ShelleyMAEra)
 import Cardano.Ledger.ShelleyMA.Timelocks (ValidityInterval (..))
 import Cardano.Ledger.TxIn (TxIn (..))
 import Cardano.Ledger.Val
   ( DecodeMint (..),
     EncodeMint (..),
-    Val (..),
   )
 import Control.DeepSeq (NFData (..))
 import Data.Coders
@@ -106,7 +106,7 @@ data TxBodyRaw era = TxBodyRaw
     vldt :: !ValidityInterval, -- imported from Timelocks
     update :: !(StrictMaybe (Update era)),
     adHash :: !(StrictMaybe (AuxiliaryDataHash (Crypto era))),
-    mint :: !(Value era)
+    mint :: !(MultiAsset (Crypto era))
   }
 
 deriving instance
@@ -154,7 +154,7 @@ txSparse (TxBodyRaw inp out cert wdrl fee (ValidityInterval bot top) up hash frg
     !> encodeKeyedStrictMaybe 6 up
     !> encodeKeyedStrictMaybe 7 hash
     !> encodeKeyedStrictMaybe 8 bot
-    !> Omit isZero (Key 9 (E encodeMint frge))
+    !> Omit (== mempty) (Key 9 (E encodeMint frge))
 
 bodyFields :: ShelleyMAEraTxBody era => Word -> Field (TxBodyRaw era)
 bodyFields 0 = field (\x tx -> tx {inputs = x}) (D (decodeSet fromCBOR))
@@ -169,7 +169,7 @@ bodyFields 8 = ofield (\x tx -> tx {vldt = (vldt tx) {invalidBefore = x}}) From
 bodyFields 9 = field (\x tx -> tx {mint = x}) (D decodeMint)
 bodyFields n = invalidField n
 
-initial :: (Val (Value era)) => TxBodyRaw era
+initial :: TxBodyRaw era
 initial =
   TxBodyRaw
     empty
@@ -180,7 +180,7 @@ initial =
     (ValidityInterval SNothing SNothing)
     SNothing
     SNothing
-    zero
+    mempty
 
 -- ===========================================================================
 -- Wrap it all up in a newtype, hiding the insides with a pattern construtor.
@@ -228,7 +228,7 @@ pattern MATxBody ::
   ValidityInterval ->
   StrictMaybe (Update era) ->
   StrictMaybe (AuxiliaryDataHash (Crypto era)) ->
-  Value era ->
+  MultiAsset (Crypto era) ->
   MATxBody era
 pattern MATxBody inputs outputs certs wdrls txfee vldt update adHash mint <-
   TxBodyConstr
@@ -260,7 +260,7 @@ pattern TxBody' ::
   ValidityInterval ->
   StrictMaybe (Update era) ->
   StrictMaybe (AuxiliaryDataHash (Crypto era)) ->
-  Value era ->
+  MultiAsset (Crypto era) ->
   MATxBody era
 pattern TxBody' {inputs', outputs', certs', wdrls', txfee', vldt', update', adHash', mint'} <-
   TxBodyConstr
@@ -331,7 +331,9 @@ class
   where
   vldtTxBodyL :: Lens' (Core.TxBody era) ValidityInterval
 
-  mintTxBodyL :: Lens' (Core.TxBody era) (Value era)
+  mintTxBodyL :: Lens' (Core.TxBody era) (MultiAsset (Crypto era))
+
+  mintValueTxBodyF :: SimpleGetter (Core.TxBody era) (Core.Value era)
 
 instance MAClass ma crypto => ShelleyMAEraTxBody (ShelleyMAEra ma crypto) where
   vldtTxBodyL =
@@ -339,6 +341,9 @@ instance MAClass ma crypto => ShelleyMAEraTxBody (ShelleyMAEra ma crypto) where
 
   mintTxBodyL =
     lensTxBodyRaw mint (\txBodyRaw mint_ -> txBodyRaw {mint = mint_})
+
+  mintValueTxBodyF =
+    to (\(TxBodyConstr (Memo txBodyRaw _)) -> promoteMultiAsset (Proxy @ma) (mint txBodyRaw))
 
 instance MAClass ma crypto => EraTxOut (ShelleyMAEra ma crypto) where
   type TxOut (ShelleyMAEra ma crypto) = ShelleyTxOut (ShelleyMAEra ma crypto)
