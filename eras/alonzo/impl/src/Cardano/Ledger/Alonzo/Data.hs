@@ -78,7 +78,7 @@ import Data.Coders
 import Data.Foldable (foldl')
 import Data.Map (Map)
 import Data.Maybe (mapMaybe)
-import Data.MemoBytes (Mem, MemoBytes (..), memoBytes)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytes)
 import Data.Sequence.Strict (StrictSeq)
 import qualified Data.Sequence.Strict as StrictSeq
 import Data.Typeable (Typeable)

@@ -180,7 +180,7 @@ import qualified Data.ByteString.Lazy as Lazy (ByteString, toStrict)
 import qualified Data.Hashable as Hashable
 import Data.IP (IPv4, IPv6)
 import qualified Data.Map.Strict as Map
-import Data.MemoBytes (MemoBytes (..))
+import Cardano.Ledger.MemoBytes (MemoBytes (..))
 import Data.Proxy (Proxy (..))
 import Data.Sequence.Strict (StrictSeq)
 import Data.Set (Set, toList)

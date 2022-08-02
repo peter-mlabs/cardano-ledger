@@ -130,7 +130,7 @@ import Data.Coders
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Maybe (fromMaybe)
-import Data.MemoBytes (Mem, MemoBytes (..), memoBytes)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes, memoBytesFromCBOR, pattern Memo)
 import Data.Proxy (Proxy (..))
 import Data.Sequence.Strict (StrictSeq)
 import qualified Data.Sequence.Strict as StrictSeq
@@ -332,7 +332,7 @@ instance EraTxBody era => ToCBOR (TxBodyRaw era) where
 -- ====================================================
 -- Introduce ShelleyTxBody as a newtype around a MemoBytes
 
-newtype ShelleyTxBody era = TxBodyConstr (MemoBytes (TxBodyRaw era))
+newtype ShelleyTxBody era = TxBodyConstr (MemoBytes TxBodyRaw era)
   deriving (Generic, Typeable)
   deriving newtype (SafeToHash)
 
@@ -409,7 +409,7 @@ deriving instance EraTxBody era => Show (TxBody era)
 
 deriving instance Eq (TxBody era)
 
-deriving via Mem (TxBodyRaw era) instance EraTxBody era => FromCBOR (Annotator (TxBody era))
+deriving via Mem TxBodyRaw era instance EraTxBody era => FromCBOR (Annotator (TxBody era))
 
 -- | Pattern for use by external users
 pattern ShelleyTxBody ::
@@ -445,7 +445,7 @@ pattern ShelleyTxBody {_inputs, _outputs, _certs, _wdrls, _txfee, _ttl, _txUpdat
 {-# COMPLETE ShelleyTxBody #-}
 
 mkShelleyTxBody :: EraTxBody era => TxBodyRaw era -> ShelleyTxBody era
-mkShelleyTxBody = TxBodyConstr . memoBytes . txSparse
+mkShelleyTxBody = TxBodyConstr . memoBytesFromCBOR . txSparse
 
 -- =========================================
 

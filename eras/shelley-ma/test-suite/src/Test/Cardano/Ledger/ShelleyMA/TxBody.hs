@@ -28,7 +28,7 @@ import Cardano.Slotting.Slot (SlotNo (..))
 import Data.ByteString.Short (ShortByteString)
 import qualified Data.ByteString.Short as Short
 import qualified Data.Map.Strict as Map
-import Data.MemoBytes (MemoBytes (Memo))
+import Cardano.Ledger.MemoBytes (MemoBytes (Memo))
 import Data.Sequence.Strict (fromList)
 import qualified Data.Sequence.Strict as StrictSeq
 import Data.Set (empty)

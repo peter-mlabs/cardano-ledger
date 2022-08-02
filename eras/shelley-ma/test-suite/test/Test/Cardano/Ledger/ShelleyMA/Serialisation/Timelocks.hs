@@ -22,7 +22,7 @@ import Cardano.Ledger.ShelleyMA.Timelocks
   )
 import Cardano.Slotting.Slot (SlotNo (..))
 import qualified Data.ByteString.Lazy as Lazy
-import Data.MemoBytes (MemoBytes (Memo))
+import Cardano.Ledger.MemoBytes (MemoBytes (Memo))
 import Data.Roundtrip (embedTripAnn, roundTripAnn)
 import Data.Sequence.Strict (fromList)
 import Test.Cardano.Ledger.EraBuffet (TestCrypto)

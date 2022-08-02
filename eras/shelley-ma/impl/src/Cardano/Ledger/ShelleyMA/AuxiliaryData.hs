@@ -48,7 +48,7 @@ import Codec.CBOR.Decoding
 import Control.DeepSeq
 import Data.Coders
 import Data.Map.Strict (Map)
-import Data.MemoBytes (Mem, MemoBytes (Memo), memoBytes)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes (Memo), memoBytesFromCBOR)
 import Data.Sequence.Strict (StrictSeq)
 import qualified Data.Sequence.Strict as StrictSeq
 import Data.Word (Word64)
@@ -82,7 +82,7 @@ deriving instance NoThunks (Script era) => NoThunks (AuxiliaryDataRaw era)
 
 instance NFData (Script era) => NFData (AuxiliaryDataRaw era)
 
-newtype MAAuxiliaryData era = AuxiliaryDataWithBytes (MemoBytes (AuxiliaryDataRaw era))
+newtype MAAuxiliaryData era = AuxiliaryDataWithBytes (MemoBytes AuxiliaryDataRaw era)
   deriving (Generic)
   deriving newtype (ToCBOR, SafeToHash)
 
@@ -99,7 +99,7 @@ deriving newtype instance
 deriving newtype instance NFData (Script era) => NFData (MAAuxiliaryData era)
 
 pattern MAAuxiliaryData ::
-  ToCBOR (Script era) =>
+  (ToCBOR (Script era), Era era) =>
   Map Word64 Metadatum ->
   StrictSeq (Script era) ->
   MAAuxiliaryData era
@@ -108,7 +108,7 @@ pattern MAAuxiliaryData blob sp <-
   where
     MAAuxiliaryData blob sp =
       AuxiliaryDataWithBytes $
-        memoBytes
+        memoBytesFromCBOR
           (encAuxiliaryDataRaw $ AuxiliaryDataRaw blob sp)
 
 {-# COMPLETE MAAuxiliaryData #-}
@@ -168,7 +168,7 @@ instance
           )
 
 deriving via
-  (Mem (AuxiliaryDataRaw era))
+  (Mem AuxiliaryDataRaw era)
   instance
     (Era era, FromCBOR (Annotator (Script era))) =>
     FromCBOR (Annotator (MAAuxiliaryData era))
