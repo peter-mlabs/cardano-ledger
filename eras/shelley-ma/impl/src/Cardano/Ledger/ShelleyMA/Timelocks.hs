@@ -75,9 +75,9 @@ import Data.Coders
   )
 import Data.Sequence.Strict (StrictSeq)
 import Data.Set (Set, member)
+import Data.Text.Internal.Fusion.CaseMapping (lowerMapping)
 import GHC.Generics (Generic)
 import NoThunks.Class (NoThunks (..))
-import Data.Text.Internal.Fusion.CaseMapping (lowerMapping)
 
 -- =================================================================
 -- We translate a MultiSig by deserializing its bytes as a Timelock

@@ -104,7 +104,7 @@ deriving instance NoThunks Plutus.Data
 -- the newtype Data is a wrapper around the type that Plutus expects as data.
 -- The newtype will memoize the serialized bytes.
 
--- | This is a wrapper with a phantom era for Plutus.Data, since we need 
+-- | This is a wrapper with a phantom era for Plutus.Data, since we need
 -- something with kind (* -> *) for MemoBytes
 newtype PlutusData era = PlutusData Plutus.Data
   deriving newtype (Eq, Generic, Show, ToCBOR, NFData, NoThunks)
