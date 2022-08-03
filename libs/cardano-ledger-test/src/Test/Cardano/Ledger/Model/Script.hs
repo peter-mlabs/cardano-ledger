@@ -17,7 +17,6 @@ module Test.Cardano.Ledger.Model.Script where
 import Cardano.Ledger.Alonzo.Language (Language (..))
 import Cardano.Ledger.Alonzo.Scripts (AlonzoScript (..))
 import Cardano.Ledger.Alonzo.Tx (IsValid (..))
-import qualified Cardano.Ledger.Crypto as C
 import Cardano.Ledger.Keys
 import Cardano.Ledger.ShelleyMA.Timelocks
 import Cardano.Slotting.Slot hiding (at)
@@ -36,6 +35,7 @@ import Quiet (Quiet (..))
 import Test.Cardano.Ledger.Alonzo.PlutusScripts as TestScripts
 import qualified Test.Cardano.Ledger.Alonzo.Scripts as AlonzoTest
 import Test.Cardano.Ledger.Model.FeatureSet
+import Cardano.Ledger.Era (Crypto, Era)
 
 data ModelAddress (k :: TyScriptFeature) = ModelAddress
   { _modelAddress_pmt :: ModelCredential 'Payment k,
@@ -245,14 +245,14 @@ data ModelTimelock
 instance NFData ModelTimelock
 
 elaborateModelTimelock ::
-  forall crypto m.
-  (C.Crypto crypto, Applicative m) =>
-  (ModelCredential 'Witness ('TyScriptFeature 'False 'False) -> m (KeyHash 'Witness crypto)) ->
+  forall era m.
+  (Applicative m, Era era) =>
+  (ModelCredential 'Witness ('TyScriptFeature 'False 'False) -> m (KeyHash 'Witness (Crypto era))) ->
   ModelTimelock ->
-  m (Timelock crypto)
+  m (Timelock era)
 elaborateModelTimelock f = go
   where
-    go :: ModelTimelock -> m (Timelock crypto)
+    go :: ModelTimelock -> m (Timelock era)
     go = \case
       ModelTimelock_Signature maddr -> RequireSignature <$> f maddr
       ModelTimelock_AllOf xs -> RequireAllOf . StrictSeq.fromList <$> traverse go xs
