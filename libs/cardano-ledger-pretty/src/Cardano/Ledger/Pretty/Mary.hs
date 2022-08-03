@@ -17,6 +17,23 @@ import Cardano.Ledger.ShelleyMA.Timelocks
 import Cardano.Ledger.ShelleyMA.TxBody
 import Prettyprinter (hsep, viaShow)
 
+ppPolicyID :: PolicyID crypto -> PDoc
+ppPolicyID (PolicyID sh) = ppScriptHash sh
+
+instance PrettyA (PolicyID crypto) where prettyA x = ppSexp "PolicyID" [ppPolicyID x]
+
+ppAssetName :: AssetName -> PDoc
+ppAssetName = viaShow
+
+instance PrettyA AssetName where prettyA x = ppSexp "AssetName" [ppAssetName x]
+
+ppMultiAsset :: MultiAsset crypto -> PDoc
+ppMultiAsset m = ppList pptriple (flattenMultiAssets m)
+  where
+    pptriple (i, asset, num) = hsep [ppPolicyID i, ppAssetName asset, ppInteger num]
+
+instance CC.Crypto crypto => PrettyA (MultiAsset crypto) where prettyA x = ppSexp "MultiAsset" [ppMultiAsset x]
+
 ppValue :: MaryValue crypto -> PDoc
 ppValue v = case gettriples' v of
   (n, triples, []) -> ppSexp "Value" [ppCoin (Coin n), ppList pptriple triples]
@@ -24,17 +41,7 @@ ppValue v = case gettriples' v of
   where
     pptriple (i, asset, num) = hsep [ppPolicyID i, ppAssetName asset, ppInteger num]
 
-ppPolicyID :: PolicyID crypto -> PDoc
-ppPolicyID (PolicyID sh) = ppScriptHash sh
-
-ppAssetName :: AssetName -> PDoc
-ppAssetName = viaShow
-
 instance PrettyA (MaryValue crypto) where prettyA = ppValue
-
-instance PrettyA (PolicyID crypto) where prettyA x = ppSexp "PolicyID" [ppPolicyID x]
-
-instance PrettyA AssetName where prettyA x = ppSexp "AssetName" [ppAssetName x]
 
 ppTimelock :: CC.Crypto crypto => Timelock crypto -> PDoc
 ppTimelock (RequireSignature akh) =
