@@ -234,7 +234,7 @@ babbageTxInfo pp lang ei sysS utxo tx = do
     witnesses = tx ^. witsTxL
     outs = txBody ^. outputsTxBodyL
     fee = txBody ^. feeTxBodyL
-    forge = txBody ^. mintTxBodyL
+    forge = txBody ^. mintValueTxBodyF
     interval = txBody ^. vldtTxBodyL
 
     datpairs = Map.toList (unTxDats $ txdats' witnesses)
