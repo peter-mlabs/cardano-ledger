@@ -103,7 +103,7 @@ instance
 
 instance Eq (MemoBytes t era) where (Memo' _ x _) == (Memo' _ y _) = x == y
 
-instance Show (t era) => Show (MemoBytes t era) where show (Memo' y _ _) = show y
+instance Show (t era) => Show (MemoBytes t era) where show (Memo' y _ h) = show y <> "(hash " <> show h <> ")"
 
 instance SafeToHash (MemoBytes t era) where
   originalBytes = fromShort . memoByteString
