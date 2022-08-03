@@ -21,6 +21,7 @@ import Cardano.Ledger.Coin (Coin (..))
 import Cardano.Ledger.Core
 import Cardano.Ledger.Mary (MaryEra)
 import Cardano.Ledger.Mary.Value (AssetName (..), MaryValue (..), PolicyID (..))
+import Cardano.Ledger.MemoBytes (MemoBytes (Memo))
 import Cardano.Ledger.Shelley.TxBody (ShelleyEraTxBody (..), Wdrl (..))
 import Cardano.Ledger.ShelleyMA.Timelocks (Timelock (..), ValidityInterval (..))
 import Cardano.Ledger.ShelleyMA.TxBody (MATxBody (..), ShelleyMAEraTxBody (..))
@@ -28,7 +29,6 @@ import Cardano.Slotting.Slot (SlotNo (..))
 import Data.ByteString.Short (ShortByteString)
 import qualified Data.ByteString.Short as Short
 import qualified Data.Map.Strict as Map
-import Cardano.Ledger.MemoBytes (MemoBytes (Memo))
 import Data.Sequence.Strict (fromList)
 import qualified Data.Sequence.Strict as StrictSeq
 import Data.Set (empty)

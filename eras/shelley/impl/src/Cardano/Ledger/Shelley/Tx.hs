@@ -94,6 +94,7 @@ import Cardano.Ledger.HKD (HKD)
 import Cardano.Ledger.Keys (HasKeyRole (coerceKeyRole), KeyHash, KeyRole (Witness), asWitness)
 import Cardano.Ledger.Keys.Bootstrap (BootstrapWitness, bootstrapWitKeyHash)
 import Cardano.Ledger.Keys.WitVKey (WitVKey (..), witVKeyHash)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes, memoBytes, mkMemoBytes, pattern Memo)
 import Cardano.Ledger.SafeHash (SafeToHash (..))
 import Cardano.Ledger.Shelley.Era (ShelleyEra)
 import Cardano.Ledger.Shelley.Metadata ()
@@ -102,6 +103,7 @@ import Cardano.Ledger.Shelley.TxBody (ShelleyTxBody (..), ShelleyTxOut (..), TxB
 import Cardano.Ledger.TxIn (TxId (..), TxIn (..))
 import Control.DeepSeq (NFData)
 import qualified Data.ByteString.Lazy as BSL
+import qualified Data.ByteString.Lazy as LBS
 import qualified Data.ByteString.Short as SBS
 import Data.Coders hiding (to)
 import Data.Foldable (fold)
@@ -114,7 +116,6 @@ import Data.Maybe.Strict
     maybeToStrictMaybe,
     strictMaybeToMaybe,
   )
-import Cardano.Ledger.MemoBytes (Mem, MemoBytes, memoBytes, mkMemoBytes, pattern Memo)
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Typeable (Typeable)
@@ -123,7 +124,6 @@ import GHC.Records
 import Lens.Micro (Lens', SimpleGetter, lens, to, (^.))
 import NoThunks.Class (AllowThunksIn (..), NoThunks (..))
 import Numeric.Natural (Natural)
-import qualified Data.ByteString.Lazy as LBS
 
 -- ========================================================
 
@@ -185,7 +185,7 @@ auxDataShelleyTxL =
     (\(TxConstr (Memo tx _)) auxData -> mkShelleyTx $ tx {_auxiliaryData = auxData})
 
 -- | Size getter for `ShelleyTx`.
-sizeShelleyTxF :: Era era =>SimpleGetter (Tx era) Integer
+sizeShelleyTxF :: Era era => SimpleGetter (Tx era) Integer
 sizeShelleyTxF = to (\(TxConstr (Memo _ bytes)) -> fromIntegral $ SBS.length bytes)
 
 mkShelleyTx :: EraTx era => TxRaw era -> ShelleyTx era

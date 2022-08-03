@@ -66,6 +66,7 @@ import qualified Cardano.Ledger.Core as Core
 import qualified Cardano.Ledger.Crypto as CC
 import Cardano.Ledger.Keys
 import Cardano.Ledger.Keys.Bootstrap (BootstrapWitness)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytes)
 import Cardano.Ledger.SafeHash (SafeToHash (..))
 import Cardano.Ledger.Serialization (FromCBORGroup (..), ToCBORGroup (..))
 import Cardano.Ledger.Shelley.TxBody (WitVKey)
@@ -75,7 +76,6 @@ import Data.Coders
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Maybe (mapMaybe)
-import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytes)
 import Data.Proxy (Proxy (..))
 import Data.Set (Set)
 import qualified Data.Set as Set

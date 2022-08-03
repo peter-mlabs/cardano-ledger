@@ -46,6 +46,7 @@ import Cardano.Binary
 import Cardano.Ledger.Coin (Coin (..))
 import Cardano.Ledger.CompactAddress (fromCborAddr, fromCborRewardAcnt)
 import Cardano.Ledger.Compactible (Compactible (..))
+import Cardano.Ledger.Shelley (ShelleyEra)
 import qualified Cardano.Ledger.Shelley.API as Ledger
 import Cardano.Ledger.Shelley.Genesis (ShelleyGenesis)
 import Cardano.Ledger.Shelley.RewardUpdate
@@ -71,7 +72,6 @@ import Test.Cardano.Ledger.Shelley.Serialisation.EraIndepGenerators ()
 import Test.Cardano.Ledger.Shelley.Serialisation.Generators ()
 import Test.Tasty
 import Test.Tasty.QuickCheck (Property, counterexample, testProperty, (.&&.), (===))
-import Cardano.Ledger.Shelley (ShelleyEra)
 
 -- | Check that: deserialize . serialize = id
 roundtrip ::

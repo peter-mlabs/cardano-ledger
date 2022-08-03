@@ -14,8 +14,8 @@ import qualified Cardano.Ledger.Crypto as CC
 import Cardano.Ledger.Shelley.PParams (ShelleyPParamsUpdate, Update (..))
 import Cardano.Ledger.Shelley.TxBody (ShelleyTxOut (..))
 import Cardano.Ledger.ShelleyMA
-import Cardano.Ledger.ShelleyMA.Era
 import Cardano.Ledger.ShelleyMA.AuxiliaryData
+import Cardano.Ledger.ShelleyMA.Era
 import Cardano.Ledger.ShelleyMA.Timelocks
 import Cardano.Ledger.ShelleyMA.TxBody
 import Cardano.Slotting.Slot

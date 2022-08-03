@@ -50,6 +50,7 @@ import Cardano.Ledger.BaseTypes (StrictMaybe (SJust, SNothing))
 import Cardano.Ledger.Coin (Coin (..))
 import Cardano.Ledger.Core hiding (TxBody)
 import qualified Cardano.Ledger.Core as Core
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytes)
 import Cardano.Ledger.SafeHash (HashAnnotated, SafeToHash)
 import Cardano.Ledger.Serialization (encodeFoldable)
 import Cardano.Ledger.Shelley.PParams (Update)
@@ -86,7 +87,6 @@ import Data.Coders
     (!>),
   )
 import qualified Data.Map.Strict as Map
-import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytes)
 import Data.Proxy
 import Data.Sequence.Strict (StrictSeq, fromList)
 import Data.Set (Set, empty)

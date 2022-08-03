@@ -62,6 +62,7 @@ import Cardano.Ledger.BaseTypes (ProtVer, StrictMaybe (..))
 import Cardano.Ledger.Core hiding (AuxiliaryData)
 import qualified Cardano.Ledger.Core as Core
 import qualified Cardano.Ledger.Crypto as CC
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytes, mkMemoBytes, shortToLazy)
 import Cardano.Ledger.SafeHash
   ( HashAnnotated,
     SafeToHash (..),
@@ -78,7 +79,6 @@ import Data.Coders
 import Data.Foldable (foldl')
 import Data.Map (Map)
 import Data.Maybe (mapMaybe)
-import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytes, mkMemoBytes, shortToLazy)
 import Data.Sequence.Strict (StrictSeq)
 import qualified Data.Sequence.Strict as StrictSeq
 import Data.Typeable (Typeable)
@@ -107,8 +107,10 @@ deriving instance NoThunks Plutus.Data
 newtype PlutusData era = PlutusData Plutus.Data
   deriving newtype (Eq, Generic, Show, ToCBOR, NFData, NoThunks)
 
-deriving via (Annotator (PlutusData era)) 
-  instance Typeable era => FromCBOR (Annotator (PlutusData era))
+deriving via
+  (Annotator (PlutusData era))
+  instance
+    Typeable era => FromCBOR (Annotator (PlutusData era))
 
 newtype Data era = DataConstr (MemoBytes PlutusData era)
   deriving (Eq, Generic, Show)

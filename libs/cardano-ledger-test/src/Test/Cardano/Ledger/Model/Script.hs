@@ -17,6 +17,7 @@ module Test.Cardano.Ledger.Model.Script where
 import Cardano.Ledger.Alonzo.Language (Language (..))
 import Cardano.Ledger.Alonzo.Scripts (AlonzoScript (..))
 import Cardano.Ledger.Alonzo.Tx (IsValid (..))
+import Cardano.Ledger.Era (Crypto, Era)
 import Cardano.Ledger.Keys
 import Cardano.Ledger.ShelleyMA.Timelocks
 import Cardano.Slotting.Slot hiding (at)
@@ -35,7 +36,6 @@ import Quiet (Quiet (..))
 import Test.Cardano.Ledger.Alonzo.PlutusScripts as TestScripts
 import qualified Test.Cardano.Ledger.Alonzo.Scripts as AlonzoTest
 import Test.Cardano.Ledger.Model.FeatureSet
-import Cardano.Ledger.Era (Crypto, Era)
 
 data ModelAddress (k :: TyScriptFeature) = ModelAddress
   { _modelAddress_pmt :: ModelCredential 'Payment k,

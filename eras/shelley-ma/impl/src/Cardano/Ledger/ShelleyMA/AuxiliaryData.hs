@@ -30,6 +30,7 @@ import Cardano.Ledger.Core
 import qualified Cardano.Ledger.Core as Core (AuxiliaryData)
 import qualified Cardano.Ledger.Crypto as CC
 import Cardano.Ledger.Hashes (EraIndependentAuxiliaryData)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes (Memo), memoBytes)
 import Cardano.Ledger.SafeHash (HashAnnotated, SafeToHash, hashAnnotated)
 import Cardano.Ledger.Serialization (mapFromCBOR, mapToCBOR)
 import Cardano.Ledger.Shelley.Metadata (Metadatum, validMetadatum)
@@ -48,7 +49,6 @@ import Codec.CBOR.Decoding
 import Control.DeepSeq
 import Data.Coders
 import Data.Map.Strict (Map)
-import Cardano.Ledger.MemoBytes (Mem, MemoBytes (Memo), memoBytes)
 import Data.Sequence.Strict (StrictSeq)
 import qualified Data.Sequence.Strict as StrictSeq
 import Data.Word (Word64)

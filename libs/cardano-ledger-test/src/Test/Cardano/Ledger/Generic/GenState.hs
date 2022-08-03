@@ -834,7 +834,7 @@ genTimelockScript proof = do
   pure scriptHash
 
 -- Adds to gsScripts
-genMultiSigScript :: forall era. Reflect era =>Proof era -> GenRS era (ScriptHash (Crypto era))
+genMultiSigScript :: forall era. Reflect era => Proof era -> GenRS era (ScriptHash (Crypto era))
 genMultiSigScript proof = do
   let genNestedMultiSig k
         | k > 0 =

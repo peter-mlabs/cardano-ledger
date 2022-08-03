@@ -8,13 +8,13 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE PatternSynonyms #-}
 
 -- | MemoBytes is an abstraction for a data type that encodes its own serialization.
 --   The idea is to use a newtype around a MemoBytes applied to a non-memoizing type.
@@ -23,7 +23,7 @@
 --   can be derived for free. MemoBytes plays an important role in the 'SafeToHash' class
 --   introduced in the module 'Cardano.Ledger.SafeHash'
 module Cardano.Ledger.MemoBytes
-  ( MemoBytes(Memo),
+  ( MemoBytes (Memo),
     Mem,
     mkMemoBytes,
     memoBytes,
@@ -73,9 +73,11 @@ data MemoBytes t era = Memo'
   deriving (NoThunks) via AllowThunksIn '["memoByteString"] (MemoBytes t era)
 
 pattern Memo :: Era era => t era -> ShortByteString -> MemoBytes t era
-pattern Memo memoType memoBytes <- Memo' memoType memoBytes _
+pattern Memo memoType memoBytes <-
+  Memo' memoType memoBytes _
   where
     Memo mt mb = mkMemoBytes mt (shortToLazy mb)
+
 {-# COMPLETE Memo #-}
 
 type family MemoHashIndex (t :: Type -> Type) :: Type
@@ -145,4 +147,3 @@ roundTripMemo (Memo' _t bytes _hash) =
 -- | Helper function. Converts a short bytestring to a lazy bytestring.
 shortToLazy :: ShortByteString -> BSL.ByteString
 shortToLazy = fromStrict . fromShort
-

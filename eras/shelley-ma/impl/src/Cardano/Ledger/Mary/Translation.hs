@@ -25,12 +25,12 @@ import Cardano.Ledger.Shelley.Tx (decodeWits)
 import Cardano.Ledger.ShelleyMA.AuxiliaryData
   ( MAAuxiliaryData (..),
   )
+import Cardano.Ledger.ShelleyMA.Timelocks (Timelock, translateTimelock)
 import qualified Cardano.Ledger.Val as Val
 import Control.Monad.Except (throwError)
 import Data.Coerce (coerce)
 import qualified Data.Map.Strict as Map
 import Data.Maybe (fromMaybe)
-import Cardano.Ledger.ShelleyMA.Timelocks (Timelock, translateTimelock)
 
 --------------------------------------------------------------------------------
 -- Translation from Allegra to Mary
@@ -166,7 +166,7 @@ instance Crypto c => TranslateEra (MaryEra c) Update where
   translateEra _ (Update pp en) = pure $ Update (coerce pp) en
 
 instance Crypto c => TranslateEra (MaryEra c) Timelock where
-  translateEra _ = pure . translateTimelock 
+  translateEra _ = pure . translateTimelock
 
 instance Crypto c => TranslateEra (MaryEra c) MAAuxiliaryData where
   translateEra ctx (MAAuxiliaryData md as) =

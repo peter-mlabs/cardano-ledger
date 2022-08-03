@@ -109,6 +109,7 @@ import Cardano.Ledger.Credential (Credential (..), PaymentCredential, StakeRefer
 import qualified Cardano.Ledger.Crypto as CC
 import Cardano.Ledger.Keys (KeyHash (..), KeyRole (..))
 import Cardano.Ledger.Mary.Value (MaryValue (..), policies, policyID)
+import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytes)
 import Cardano.Ledger.SafeHash
   ( HashAnnotated,
     SafeHash,
@@ -134,7 +135,6 @@ import Control.Monad (guard, (<$!>))
 import Data.Bits
 import Data.Coders hiding (to)
 import Data.Maybe (fromMaybe)
-import Cardano.Ledger.MemoBytes (Mem, MemoBytes (..), memoBytes)
 import Data.Sequence.Strict (StrictSeq)
 import qualified Data.Sequence.Strict as StrictSeq
 import Data.Set (Set)

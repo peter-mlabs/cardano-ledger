@@ -57,7 +57,7 @@ import Test.Cardano.Ledger.Shelley.Generator.ScriptClass
   )
 import Test.Cardano.Ledger.Shelley.Generator.Update (genPParams, genShelleyPParamsUpdate)
 import Test.Cardano.Ledger.ShelleyMA.Serialisation.Generators ()
-import Test.QuickCheck (Gen, arbitrary, frequency, Arbitrary)
+import Test.QuickCheck (Arbitrary, Gen, arbitrary, frequency)
 
 -- ==========================================================
 

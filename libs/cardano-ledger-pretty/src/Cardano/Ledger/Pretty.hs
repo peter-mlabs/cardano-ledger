@@ -70,6 +70,7 @@ import Cardano.Ledger.Keys
     hashKey,
   )
 import Cardano.Ledger.Keys.Bootstrap (BootstrapWitness (..), ChainCode (..))
+import Cardano.Ledger.MemoBytes (MemoBytes (..))
 import Cardano.Ledger.PoolDistr (IndividualPoolStake (..), PoolDistr (..))
 import Cardano.Ledger.SafeHash (SafeHash, extractHash)
 import Cardano.Ledger.Shelley.EpochBoundary
@@ -180,7 +181,6 @@ import qualified Data.ByteString.Lazy as Lazy (ByteString, toStrict)
 import qualified Data.Hashable as Hashable
 import Data.IP (IPv4, IPv6)
 import qualified Data.Map.Strict as Map
-import Cardano.Ledger.MemoBytes (MemoBytes (..))
 import Data.Proxy (Proxy (..))
 import Data.Sequence.Strict (StrictSeq)
 import Data.Set (Set, toList)

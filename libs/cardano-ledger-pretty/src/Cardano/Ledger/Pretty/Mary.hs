@@ -8,6 +8,7 @@ module Cardano.Ledger.Pretty.Mary where
 
 import Cardano.Ledger.Coin (Coin (..))
 import qualified Cardano.Ledger.Core as Core
+import Cardano.Ledger.Era (Era)
 import Cardano.Ledger.Mary.Value
 import Cardano.Ledger.Pretty hiding (ppTxBody)
 import Cardano.Ledger.Shelley.TxBody (ShelleyTxOut)
@@ -15,7 +16,6 @@ import Cardano.Ledger.ShelleyMA.AuxiliaryData
 import Cardano.Ledger.ShelleyMA.Timelocks
 import Cardano.Ledger.ShelleyMA.TxBody
 import Prettyprinter (hsep, viaShow)
-import Cardano.Ledger.Era (Era)
 
 ppValue :: MaryValue crypto -> PDoc
 ppValue v = case gettriples' v of
