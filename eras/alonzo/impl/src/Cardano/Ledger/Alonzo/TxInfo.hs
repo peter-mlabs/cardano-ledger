@@ -84,8 +84,8 @@ import Cardano.Ledger.Alonzo.Tx
 import Cardano.Ledger.Alonzo.TxBody
   ( AlonzoEraTxBody (..),
     AlonzoEraTxOut (..),
+    ShelleyMAEraTxBody (mintValueTxBodyF),
     certsTxBodyL,
-    mintTxBodyL,
     vldtTxBodyL,
     wdrlsTxBodyL,
   )
@@ -535,7 +535,7 @@ alonzoTxInfo pp lang ei sysS utxo tx = do
     txWits = tx ^. witsTxL
     txOuts = txBody ^. outputsTxBodyL
     fee = txBody ^. feeTxBodyL
-    mint = txBody ^. mintTxBodyL
+    mint = txBody ^. mintValueTxBodyF
     interval = txBody ^. vldtTxBodyL
 
     datpairs = Map.toList (unTxDats $ txdats' txWits)

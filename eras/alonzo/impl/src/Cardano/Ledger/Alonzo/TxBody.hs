@@ -108,7 +108,7 @@ import qualified Cardano.Ledger.Core as Core
 import Cardano.Ledger.Credential (Credential (..), PaymentCredential, StakeReference (..))
 import qualified Cardano.Ledger.Crypto as CC
 import Cardano.Ledger.Keys (KeyHash (..), KeyRole (..))
-import Cardano.Ledger.Mary.Value (MaryValue (..), policies, policyID)
+import Cardano.Ledger.Mary.Value (MaryValue (MaryValue), MultiAsset (..), policies, policyID)
 import Cardano.Ledger.SafeHash
   ( HashAnnotated,
     SafeHash,
@@ -127,7 +127,6 @@ import Cardano.Ledger.Val
     decodeMint,
     decodeNonNegative,
     encodeMint,
-    isZero,
   )
 import Control.DeepSeq (NFData (..), rwhnf)
 import Control.Monad (guard, (<$!>))
@@ -410,7 +409,7 @@ data TxBodyRaw era = TxBodyRaw
     _vldt :: !ValidityInterval,
     _update :: !(StrictMaybe (Update era)),
     _reqSignerHashes :: Set (KeyHash 'Witness (Crypto era)),
-    _mint :: !(MaryValue (Crypto era)),
+    _mint :: !(MultiAsset (Crypto era)),
     -- The spec makes it clear that the mint field is a
     -- Cardano.Ledger.Mary.Value.MaryValue, not a Cardano.Ledger.Core.Value.
     -- Operations on the TxBody in the AlonzoEra depend upon this.
@@ -488,6 +487,8 @@ instance CC.Crypto c => ShelleyMAEraTxBody (AlonzoEra c) where
   mintTxBodyL =
     lensTxBodyRaw _mint (\txBodyRaw mint_ -> txBodyRaw {_mint = mint_})
 
+  mintValueTxBodyF = mintTxBodyL . to (MaryValue 0)
+
 class (ShelleyMAEraTxBody era, AlonzoEraTxOut era) => AlonzoEraTxBody era where
   collateralInputsTxBodyL :: Lens' (Core.TxBody era) (Set (TxIn (Crypto era)))
 
@@ -539,7 +540,7 @@ pattern AlonzoTxBody ::
   ValidityInterval ->
   StrictMaybe (Update era) ->
   Set (KeyHash 'Witness (Crypto era)) ->
-  MaryValue (Crypto era) ->
+  MultiAsset (Crypto era) ->
   StrictMaybe (ScriptIntegrityHash (Crypto era)) ->
   StrictMaybe (AuxiliaryDataHash (Crypto era)) ->
   StrictMaybe Network ->
@@ -635,7 +636,7 @@ vldt' :: AlonzoTxBody era -> ValidityInterval
 update' :: AlonzoTxBody era -> StrictMaybe (Update era)
 reqSignerHashes' :: AlonzoTxBody era -> Set (KeyHash 'Witness (Crypto era))
 adHash' :: AlonzoTxBody era -> StrictMaybe (AuxiliaryDataHash (Crypto era))
-mint' :: AlonzoTxBody era -> MaryValue (Crypto era)
+mint' :: AlonzoTxBody era -> MultiAsset (Crypto era)
 scriptIntegrityHash' :: AlonzoTxBody era -> StrictMaybe (ScriptIntegrityHash (Crypto era))
 txnetworkid' :: AlonzoTxBody era -> StrictMaybe Network
 inputs' (TxBodyConstr (Memo raw _)) = _inputs raw
@@ -782,7 +783,7 @@ encodeTxBodyRaw
       !> encodeKeyedStrictMaybe 6 _update
       !> encodeKeyedStrictMaybe 8 bot
       !> Omit null (Key 14 (E encodeFoldable _reqSignerHashes))
-      !> Omit isZero (Key 9 (E encodeMint _mint))
+      !> Omit (== mempty) (Key 9 (E encodeMint _mint))
       !> encodeKeyedStrictMaybe 11 _scriptIntegrityHash
       !> encodeKeyedStrictMaybe 7 _adHash
       !> encodeKeyedStrictMaybe 15 _txnetworkid
