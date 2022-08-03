@@ -77,6 +77,7 @@ import Data.Sequence.Strict (StrictSeq)
 import Data.Set (Set, member)
 import GHC.Generics (Generic)
 import NoThunks.Class (NoThunks (..))
+import Data.Text.Internal.Fusion.CaseMapping (lowerMapping)
 
 -- =================================================================
 -- We translate a MultiSig by deserializing its bytes as a Timelock
@@ -128,6 +129,9 @@ data TimelockRaw era
 
 deriving instance Era era => NoThunks (TimelockRaw era)
 
+-- | This function deconstructs and then reconstructs the timelock script
+-- to prove the compiler that we can arbirarily switch out the eras as long
+-- as the cryptos for both eras are the same.
 translateTimelock ::
   forall era1 era2.
   ( Era era1,
