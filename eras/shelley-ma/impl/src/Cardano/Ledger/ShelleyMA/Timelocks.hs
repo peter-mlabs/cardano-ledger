@@ -185,7 +185,7 @@ newtype Timelock era = TimelockConstr (MemoBytes TimelockRaw era)
   deriving (Eq, Show, Generic)
   deriving newtype (ToCBOR, NoThunks, NFData, SafeToHash)
 
-type instance SomeScript 'PhaseOne (ShelleyMAEra ma c) = Timelock c
+type instance SomeScript 'PhaseOne (ShelleyMAEra ma c) = Timelock (ShelleyMAEra ma c)
 
 -- | Since Timelock scripts are a strictly backwards compatible extension of
 -- Multisig scripts, we can use the same 'scriptPrefixTag' tag here as we did

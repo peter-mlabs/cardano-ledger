@@ -41,6 +41,7 @@ import Cardano.Ledger.Shelley.API
 import qualified Cardano.Ledger.Shelley.API as API
 import Cardano.Ledger.Shelley.PParams (ShelleyPParamsHKD)
 import Data.Coerce
+import Cardano.Ledger.ShelleyMA.Timelocks (translateTimelock)
 
 --------------------------------------------------------------------------------
 -- Translation from Alonzo to Babbage
@@ -182,9 +183,9 @@ translateDatum = \case
   DatumHash dh -> DatumHash dh
   Datum bd -> Datum (coerce bd)
 
-translateScript :: Core.Script (BabbageEra c) -> Core.Script (ConwayEra c)
+translateScript :: Crypto c => Core.Script (BabbageEra c) -> Core.Script (ConwayEra c)
 translateScript = \case
-  TimelockScript ts -> TimelockScript ts
+  TimelockScript ts -> TimelockScript $ translateTimelock ts
   PlutusScript l sbs -> PlutusScript l sbs
 
 translatePParams ::

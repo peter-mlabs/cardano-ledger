@@ -13,7 +13,7 @@ module Cardano.Ledger.ShelleyMA.Tx
   )
 where
 
-import Cardano.Ledger.Core (Era (Crypto), EraTx (..), EraWitnesses (..), PhasedScript (..))
+import Cardano.Ledger.Core (EraTx (..), EraWitnesses (..), PhasedScript (..))
 import Cardano.Ledger.Keys.WitVKey (witVKeyHash)
 import Cardano.Ledger.Shelley.Tx
   ( ShelleyTx,

@@ -91,7 +91,7 @@ newtype MultiSig era = MultiSigConstr (MemoBytes MultiSigRaw era)
 nativeMultiSigTag :: BS.ByteString
 nativeMultiSigTag = "\00"
 
-type instance SomeScript 'PhaseOne (ShelleyEra c) = MultiSig c
+type instance SomeScript 'PhaseOne (ShelleyEra c) = MultiSig (ShelleyEra c)
 
 instance CC.Crypto c => EraScript (ShelleyEra c) where
   type Script (ShelleyEra c) = MultiSig (ShelleyEra c)

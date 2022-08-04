@@ -142,7 +142,7 @@ instance SafeToHash (AlonzoScript era) where
   originalBytes (TimelockScript t) = originalBytes t
   originalBytes (PlutusScript _ bs) = fromShort bs
 
-type instance SomeScript 'PhaseOne (AlonzoEra c) = Timelock c
+type instance SomeScript 'PhaseOne (AlonzoEra c) = Timelock (AlonzoEra c)
 
 type instance SomeScript 'PhaseTwo (AlonzoEra c) = (Language, ShortByteString)
 
