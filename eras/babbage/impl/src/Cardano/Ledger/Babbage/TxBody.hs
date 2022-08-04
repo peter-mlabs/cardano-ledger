@@ -561,7 +561,7 @@ allInputsBabbageTxBodyF =
       `Set.union` (txBody ^. collateralInputsBabbageTxBodyL)
       `Set.union` (txBody ^. referenceInputsBabbageTxBodyL)
 
-mintedBabbageTxBodyF :: SimpleGetter (BabbageTxBody era) (Set (ScriptHash (Crypto era)))
+mintedBabbageTxBodyF :: Era era => SimpleGetter (BabbageTxBody era) (Set (ScriptHash (Crypto era)))
 mintedBabbageTxBodyF =
   to (\(TxBodyConstr (Memo txBodyRaw _)) -> Set.map policyID (policies (_mint txBodyRaw)))
 
