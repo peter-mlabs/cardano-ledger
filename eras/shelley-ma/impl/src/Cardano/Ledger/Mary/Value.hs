@@ -20,11 +20,11 @@ module Cardano.Ledger.Mary.Value
     flattenMultiAssets,
     insert,
     lookup,
+    multiAssetFromList,
     policies,
     prune,
     representationSize,
     showValue,
-    valueFromList,
     gettriples',
   )
 where
@@ -679,7 +679,7 @@ representationSize xs = abcRegionSize + pidBlockSize + anameBlockSize
 from :: forall crypto. (CC.Crypto crypto) => CompactValue crypto -> MaryValue crypto
 from (CompactValueAdaOnly (CompactCoin c)) = MaryValue (fromIntegral c) (MultiAsset mempty)
 from (CompactValueMultiAsset (CompactCoin c) numAssets rep) =
-  valueFromList (fromIntegral c) triples
+  MaryValue (fromIntegral c) (multiAssetFromList triples)
   where
     n = fromIntegral numAssets
 
@@ -770,17 +770,17 @@ lookup pid aid (MaryValue _ (MultiAsset m)) =
     Just m2 -> Map.findWithDefault 0 aid m2
 
 -- | insert comb policy asset n v,
---   if comb = \ old new -> old, the integer in the MaryValue is prefered over n
---   if comb = \ old new -> new, then n is prefered over the integer in the MaryValue
---   if (comb old new) == 0, then that value should not be stored in the Map part of the MaryValue.
+--   if comb = \ old new -> old, the integer in the MultiAsset is prefered over n
+--   if comb = \ old new -> new, then n is prefered over the integer in the MultiAsset
+--   if (comb old new) == 0, then that value should not be stored in the MultiAsset
 insert ::
   (Integer -> Integer -> Integer) ->
   PolicyID crypto ->
   AssetName ->
   Integer ->
-  MaryValue crypto ->
-  MaryValue crypto
-insert combine pid aid new (MaryValue cn (MultiAsset m1)) =
+  MultiAsset crypto ->
+  MultiAsset crypto
+insert combine pid aid new (MultiAsset m1) =
   case splitLookup pid m1 of
     (l1, Just m2, l2) ->
       case splitLookup aid m2 of
@@ -789,33 +789,27 @@ insert combine pid aid new (MaryValue cn (MultiAsset m1)) =
             then
               let m3 = link2 v1 v2
                in if Map.null m3
-                    then MaryValue cn (MultiAsset (link2 l1 l2))
-                    else MaryValue cn (MultiAsset (link pid m3 l1 l2))
-            else MaryValue cn (MultiAsset (link pid (link aid n v1 v2) l1 l2))
+                    then MultiAsset (link2 l1 l2)
+                    else MultiAsset (link pid m3 l1 l2)
+            else MultiAsset (link pid (link aid n v1 v2) l1 l2)
           where
             n = combine old new
         (_, Nothing, _) ->
-          MaryValue
-            cn
-            ( MultiAsset
-                ( link
-                    pid
-                    ( if new == 0
-                        then m2
-                        else Map.insert aid new m2
-                    )
-                    l1
-                    l2
+          MultiAsset
+            ( link
+                pid
+                ( if new == 0
+                    then m2
+                    else Map.insert aid new m2
                 )
+                l1
+                l2
             )
     (l1, Nothing, l2) ->
-      MaryValue
-        cn
-        ( MultiAsset
-            ( if new == 0
-                then link2 l1 l2
-                else link pid (Map.singleton aid new) l1 l2
-            )
+      MultiAsset
+        ( if new == 0
+            then link2 l1 l2
+            else link pid (Map.singleton aid new) l1 l2
         )
 
 -- ========================================================
@@ -828,12 +822,9 @@ prune assets =
   Map.filter (not . null) $ Map.filter (/= 0) <$> assets
 
 -- | Rather than using prune to remove 0 assets, when can avoid adding them in the
---   first place by using valueFromList to construct a MaryValue.
-valueFromList :: Integer -> [(PolicyID era, AssetName, Integer)] -> MaryValue era
-valueFromList ada =
-  foldr
-    (\(p, n, i) ans -> insert (+) p n i ans)
-    (MaryValue ada (MultiAsset Map.empty))
+--   first place by using valueFromList to construct a MultiAsset
+multiAssetFromList :: [(PolicyID era, AssetName, Integer)] -> MultiAsset era
+multiAssetFromList = foldr (\(p, n, i) ans -> insert (+) p n i ans) mempty
 
 -- | Display a MaryValue as a String, one token per line
 showValue :: MaryValue crypto -> String
