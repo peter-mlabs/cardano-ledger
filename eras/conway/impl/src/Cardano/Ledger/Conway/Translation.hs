@@ -40,8 +40,8 @@ import Cardano.Ledger.Shelley.API
   )
 import qualified Cardano.Ledger.Shelley.API as API
 import Cardano.Ledger.Shelley.PParams (ShelleyPParamsHKD)
-import Data.Coerce
 import Cardano.Ledger.ShelleyMA.Timelocks (translateTimelock)
+import Data.Coerce
 
 --------------------------------------------------------------------------------
 -- Translation from Alonzo to Babbage
